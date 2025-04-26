@@ -1,0 +1,651 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crazy Boy - Minecraft Gaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0d1b2a;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: #1b263b;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 10px rgba(0, 255, 255, 0.2);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9rem;
+            margin: 0 15px;
+            transition: color 0.3s;
+        }
+
+        .nav a:hover {
+            color: #00ffcc;
+            text-shadow: 0 0 10px #00ffcc;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('https://raw.githubusercontent.com/kuldipgamer01/Websiteimages/main/BoySitting.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            margin-top: 60px;
+        }
+
+        .hero-title {
+            font-family: 'Roboto', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            color: #00ffcc;
+            text-shadow: 0 0 20px #00f7ff, 0 0 30px #00ffcc;
+            margin-bottom: 10px;
+            animation: glitch 1.5s linear infinite;
+        }
+
+        @keyframes glitch {
+            2% { transform: translate(2px, 0); }
+            4% { transform: translate(-2px, 0); }
+            6% { transform: translate(0, 0) skew(5deg); }
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #b0bec5;
+            margin-bottom: 20px;
+        }
+
+        .subscribe-btn {
+            background: #ff2d55;
+            color: #fff;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px #ff2d55;
+        }
+
+        .subscribe-btn:hover {
+            box-shadow: 0 0 20px #ff2d55, 0 0 30px #ff2d55;
+            transform: scale(1.1);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            background: #1b263b;
+        }
+
+        .tabs a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tabs a:hover {
+            border-bottom: 2px solid #00ffcc;
+            color: #00ffcc;
+        }
+
+        .content {
+            padding: 40px 20px;
+            background: #0d1b2a;
+            text-align: center;
+        }
+
+        .content p {
+            font-size: 1.1rem;
+            color: #b0bec5;
+            margin-bottom: 40px;
+        }
+
+        .thanks-section {
+            padding: 40px 20px;
+            background: #1b263b;
+            text-align: center;
+        }
+
+        .thanks-img {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 15px #00ffcc;
+        }
+
+        .video-grid {
+            padding: 40px 20px;
+            background: #1b263b;
+        }
+
+        .swiper-container {
+            width: 100%;
+            padding: 20px 0;
+        }
+
+        .swiper-slide {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .section-title {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #00ffcc;
+        }
+
+        .video-card {
+            position: relative;
+            background: #0d1b2a;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+        }
+
+        .video-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #00ffcc;
+        }
+
+        .video-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .video-card .play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: #ff2d55;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .video-card:hover .play-btn {
+            opacity: 1;
+        }
+
+        .video-card h3 {
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9rem;
+            padding: 10px;
+            color: #e0e0e0;
+            text-align: center;
+        }
+
+        .live-stream {
+            background: #ff2d55;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .live-stream a {
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .newsletter {
+            padding: 40px 20px;
+            background: #1b263b;
+            text-align: center;
+        }
+
+        .newsletter input {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+            background: #e0e0e0;
+            color: #0d1b2a;
+        }
+
+        .newsletter button {
+            background: #00ffcc;
+            color: #0d1b2a;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .about-section {
+            padding: 80px 20px;
+            background: #1b263b;
+            text-align: center;
+        }
+
+        .about-section img {
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+
+        .contact-section {
+            padding: 80px 20px;
+            background: #1b263b;
+            text-align: center;
+        }
+
+        .contact-section form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-section input, .contact-section textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .contact-section button {
+            background: #00ffcc;
+            color: #0d1b2a;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Roboto', sans-serif;
+            cursor: pointer;
+        }
+
+        footer {
+            background: #0d1b2a;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .social-icons a {
+            color: #e0e0e0;
+            font-size: 1.5rem;
+            margin: 0 10px;
+            transition: color 0.3s;
+        }
+
+        .social-icons .youtube:hover { color: #ff2d55; }
+        .social-icons .instagram:hover { color: #e4405f; }
+        .social-icons .telegram:hover { color: #0088cc; }
+
+        .light-theme {
+            background: #f0f0f0;
+            color: #0d1b2a;
+        }
+
+        .light-theme .header, .light-theme .hero, .light-theme .video-grid, .light-theme .content, .light-theme footer {
+            background: #ffffff;
+        }
+
+        @media (max-width: 640px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            .subscribe-btn {
+                padding: 10px 20px;
+            }
+            .tabs {
+                flex-wrap: wrap;
+            }
+            .video-card img {
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <img src="https://raw.githubusercontent.com/kuldipgamer01/Websiteimages/main/Websitelogo.jpg" alt="Crazy Boy Logo" class="logo-img">
+        </div>
+        <div class="nav">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#videos">Videos</a>
+            <a href="#subscribers">Subscribers</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </header>
+
+    <section class="hero" id="home">
+        <h1 class="hero-title">Hi I Am Crazy</h1>
+        <p class="hero-subtitle">Welcome to my Minecraft Gameplay & PVP Battle Channel with 427,000+ Subscribers!</p>
+        <a href="https://youtube.com/@crazy_boy?si=P9wvGRXxayy9SJAu"><button class="subscribe-btn">Subscribe Now</button></a>
+    </section>
+
+    <div class="tabs">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#videos">Videos</a>
+        <a href="#subscribers">Subscribers</a>
+        <a href="#contact">Contact</a>
+    </div>
+
+    <section class="content" id="subscribers">
+        <p>Join me on an epic Minecraft gameplay and PVP battle adventure! I create intense battles, challenges, and gameplay videos for 427,000+ subscribers. Subscribe for more fun and updates!</p>
+    </section>
+
+    <section class="about-section" id="about">
+        <h2 class="section-title">About Crazy Boy</h2>
+        <img src="https://via.placeholder.com/200.png?text=Crazy+Boy" alt="Crazy Boy">
+        <p style="max-width: 600px; margin: 0 auto; color: #b0bec5;">Crazy Boy is a passionate Minecraft gamer and content creator with over 427,000 subscribers. I specialize in gameplay, PVP battles, and challenges to entertain and inspire the Minecraft community!</p>
+    </section>
+
+    <section class="video-grid" id="videos">
+        <h2 class="section-title">YouTube Channel</h2>
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="video-card">
+                        <a href="https://youtu.be/GmhnJUPMni4?si=HBMH8_rmFglu1Lcq">
+                            <img src="https://raw.githubusercontent.com/kuldipgamer01/Websiteimages/main/GmhnJUPMni4-HD.jpg" alt="Video 1">
+                            <i class="fas fa-play play-btn"></i>
+                        </a>
+                        <h3>Ultimate PVP Battle</h3>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="video-card">
+                        <a href="https://youtu.be/BNPo_28fihE?si=UjmNssJFkU9Fqa1x">
+                            <img src="https://raw.githubusercontent.com/kuldipgamer01/Websiteimages/main/BNPo_28fihE-HD.jpg" alt="Video 2">
+                            <i class="fas fa-play play-btn"></i>
+                        </a>
+                        <h3>Intense Gameplay Challenge</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </section>
+
+    <section class="live-stream">
+        <a href="https://youtube.com/@crazy_boy/live">Watch Live Now!</a>
+    </section>
+
+    <section class="thanks-section">
+        <h2 class="section-title">Thanks for Your Amazing Support!</h2>
+        <img src="https://raw.githubusercontent.com/kuldipgamer01/Websiteimages/main/Sakuna.jpg" alt="Sakuna" class="thanks-img">
+    </section>
+
+    <section class="newsletter">
+        <h2 class="section-title">Join Our Newsletter</h2>
+        <form id="newsletter-form">
+            <input type="email" placeholder="Enter your email" required>
+            <button type="submit">Subscribe</button>
+        </form>
+    </section>
+
+    <section class="contact-section" id="contact">
+        <h2 class="section-title">Contact Crazy Boy</h2>
+        <form id="contact-form" action="https://formspree.io/f/your-formspree-id" method="POST">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </section>
+
+    <footer>
+        <div class="social-icons">
+            <a href="https://youtube.com/@crazy_boy?si=P9wvGRXxayy9SJAu" class="youtube"><i class="fab fa-youtube"></i></a>
+            <a href="https://instagram.com" class="instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://telegram.me" class="telegram"><i class="fab fa-telegram"></i></a>
+        </div>
+        <p>© 2025 Crazy Boy. All rights reserved.</p>
+    </footer>
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href'))?.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Stats counter (for subscribers)
+        window.onload = function() {
+            const subscriberCount = document.createElement('p');
+            subscriberCount.className = 'section-title';
+            subscriberCount.innerText = 'Subscribers: 0';
+            document.querySelector('.content').prepend(subscriberCount);
+
+            let count = 0;
+            const target = 427000;
+            const speed = 50;
+            const counter = setInterval(() => {
+                if (count >= target) {
+                    clearInterval(counter);
+                    subscriberCount.innerText = `Subscribers: ${target.toLocaleString()}+`;
+                } else {
+                    count += 1000;
+                    subscriberCount.innerText = `Subscribers: ${count.toLocaleString()}`;
+                }
+            }, speed);
+        };
+
+        // Initialize Swiper for video carousel
+        const swiper = new Swiper('.swiper-container', {
+            slidesPerView: 2,
+            spaceBetween: 20,
+            loop: true,
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 1,
+                },
+                1024: {
+                    slidesPerView: 2,
+                },
+            },
+        });
+
+        // Background music toggle
+        const music = document.createElement('audio');
+        music.id = 'bg-music';
+        music.loop = true;
+        music.innerHTML = '<source src="https://www.mfiles.co.uk/mp3-downloads/ehren-matthes-calm-guitar-1085.mp3" type="audio/mp3">';
+        document.body.appendChild(music);
+
+        const musicToggle = document.createElement('button');
+        musicToggle.innerText = 'Music: Off';
+        musicToggle.style.position = 'fixed';
+        musicToggle.style.bottom = '20px';
+        musicToggle.style.right = '20px';
+        musicToggle.style.background = '#00ffcc';
+        musicToggle.style.padding = '10px';
+        musicToggle.style.borderRadius = '5px';
+        musicToggle.style.cursor = 'pointer';
+        musicToggle.style.color = '#0d1b2a';
+        musicToggle.style.fontFamily = 'Roboto, sans-serif';
+        musicToggle.style.fontWeight = '700';
+        document.body.appendChild(musicToggle);
+
+        let isPlaying = false;
+        musicToggle.addEventListener('click', function() {
+            if (isPlaying) {
+                music.pause();
+                isPlaying = false;
+                this.innerText = 'Music: Off';
+            } else {
+                music.play();
+                isPlaying = true;
+                this.innerText = 'Music: On';
+            }
+        });
+
+        // Dark mode toggle
+        const themeToggle = document.createElement('button');
+        themeToggle.innerText = 'Toggle Theme';
+        themeToggle.style.position = 'fixed';
+        themeToggle.style.top = '20px';
+        themeToggle.style.right = '20px';
+        musicToggle.style.marginTop = '60px';
+        themeToggle.style.background = '#00ffcc';
+        themeToggle.style.padding = '10px';
+        themeToggle.style.borderRadius = '5px';
+        themeToggle.style.cursor = 'pointer';
+        themeToggle.style.color = '#0d1b2a';
+        themeToggle.style.fontFamily = 'Roboto, sans-serif';
+        themeToggle.style.fontWeight = '700';
+        document.body.appendChild(themeToggle);
+
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('light-theme');
+        });
+
+        // Newsletter form submission (using Formspree as an example)
+        document.getElementById('newsletter-form')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('https://formspree.io/f/your-formspree-id', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    alert('Thank you for subscribing!');
+                    this.reset();
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            }).catch(error => {
+                alert('Error: ' + error.message);
+            });
+        });
+
+        // Contact form submission (using Formspree)
+        document.getElementById('contact-form')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('https://formspree.io/f/your-formspree-id', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    alert('Message sent successfully!');
+                    this.reset();
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            }).catch(error => {
+                alert('Error: ' + error.message);
+            });
+        });
+    </script>
+</body>
+</html>
