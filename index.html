@@ -94,7 +94,7 @@
         }
 
         .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('https://raw.githubusercontent.com/kuldipgamer01/Websiteimages/main/BoySitting.jpg') no-repeat center center fixed;
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://raw.githubusercontent.com/kuldipgamer01/Websiteimages/main/BoySitting.jpg') no-repeat center center fixed;
             background-size: cover;
             height: 100vh;
             display: flex;
@@ -104,6 +104,8 @@
             text-align: center;
             padding: 20px;
             margin-top: 60px;
+            position: relative;
+            filter: brightness(1.1);
         }
 
         .hero-title {
@@ -114,6 +116,7 @@
             text-shadow: 0 0 20px #00f7ff, 0 0 30px #00ffcc;
             margin-bottom: 10px;
             animation: glitch 1.5s linear infinite;
+            z-index: 1;
         }
 
         @keyframes glitch {
@@ -126,6 +129,7 @@
             font-size: 1.2rem;
             color: #b0bec5;
             margin-bottom: 20px;
+            z-index: 1;
         }
 
         .subscribe-btn {
@@ -140,6 +144,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 0 10px #ff2d55;
+            z-index: 1;
         }
 
         .subscribe-btn:hover {
@@ -249,6 +254,7 @@
             color: #ff2d55;
             opacity: 0;
             transition: opacity 0.3s;
+            z-index: 2;
         }
 
         .video-card:hover .play-btn {
@@ -261,6 +267,26 @@
             padding: 10px;
             color: #e0e0e0;
             text-align: center;
+        }
+
+        .pickaxe-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            background: url('https://via.placeholder.com/50?text=Pickaxe') no-repeat center center;
+            background-size: contain;
+            animation: swing 2s infinite;
+            z-index: 1;
+        }
+
+        @keyframes swing {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(20deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-20deg); }
+            100% { transform: rotate(0deg); }
         }
 
         .live-stream {
@@ -314,6 +340,12 @@
             border-radius: 50%;
             width: 200px;
             height: 200px;
+            margin-bottom: 20px;
+        }
+
+        .channel-logo {
+            width: 150px;
+            height: auto;
             margin-bottom: 20px;
         }
 
@@ -388,6 +420,15 @@
             .video-card img {
                 height: 120px;
             }
+            .channel-logo {
+                width: 100px;
+            }
+            .pickaxe-overlay {
+                width: 40px;
+                height: 40px;
+                top: 5px;
+                right: 5px;
+            }
         }
     </style>
 </head>
@@ -425,7 +466,7 @@
 
     <section class="about-section" id="about">
         <h2 class="section-title">About Crazy Boy</h2>
-        <img src="https://via.placeholder.com/200.png?text=Crazy+Boy" alt="Crazy Boy">
+        <img src="https://raw.githubusercontent.com/kuldipgamer01/Websiteimages/main/Websitelogo.jpg" alt="Channel Logo" class="channel-logo">
         <p style="max-width: 600px; margin: 0 auto; color: #b0bec5;">Crazy Boy is a passionate Minecraft gamer and content creator with over 427,000 subscribers. I specialize in gameplay, PVP battles, and challenges to entertain and inspire the Minecraft community!</p>
     </section>
 
@@ -437,6 +478,7 @@
                     <div class="video-card">
                         <a href="https://youtu.be/GmhnJUPMni4?si=HBMH8_rmFglu1Lcq">
                             <img src="https://raw.githubusercontent.com/kuldipgamer01/Websiteimages/main/GmhnJUPMni4-HD.jpg" alt="Video 1">
+                            <div class="pickaxe-overlay"></div>
                             <i class="fas fa-play play-btn"></i>
                         </a>
                         <h3>Ultimate PVP Battle</h3>
@@ -604,7 +646,7 @@
         });
 
         // Newsletter form submission (using Formspree as an example)
-        document.getElementById('newsletter-form')?.addEventListener('click', function(e) {
+        document.getElementById('newsletter-form')?.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             fetch('https://formspree.io/f/your-formspree-id', {
@@ -626,7 +668,7 @@
         });
 
         // Contact form submission (using Formspree)
-        document.getElementById('contact-form')?.addEventListener('click', function(e) {
+        document.getElementById('contact-form')?.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             fetch('https://formspree.io/f/your-formspree-id', {
